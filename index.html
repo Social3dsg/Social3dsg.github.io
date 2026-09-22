@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Social 3D Scene Graphs</title>
+<meta name="description" content="Social 3D Scene Graphs: Modeling Human Actions and Relations for Interactive Service Robots. IROS 2026.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cline x1='30' y1='30' x2='75' y2='35' stroke='%23334155' stroke-width='4'/%3E%3Cline x1='30' y1='30' x2='50' y2='75' stroke='%23334155' stroke-width='4'/%3E%3Cline x1='75' y1='35' x2='50' y2='75' stroke='%23334155' stroke-width='4'/%3E%3Ccircle cx='30' cy='30' r='14' fill='%233b5bfd'/%3E%3Ccircle cx='75' cy='35' r='11' fill='%238b5cf6'/%3E%3Ccircle cx='50' cy='75' r='12' fill='%2314b8a6'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<nav class="navbar" id="navbar">
+  <div class="nav-container">
+    <a class="nav-logo" href="#top">Social3DSG</a>
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation"><i class="fa-solid fa-bars"></i></button>
+    <div class="nav-links" id="navLinks">
+      <a href="#overview">Overview</a>
+      <a href="#method">Method</a>
+      <a href="#benchmark">Benchmark</a>
+      <a href="#results">Results</a>
+      <a href="#gallery">Gallery</a>
+      <a href="#citation">Citation</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero" id="top">
+  <div class="container hero-inner">
+    <p class="venue-badge"><i class="fa-solid fa-robot"></i> IROS 2026</p>
+    <h1>Social 3D Scene Graphs</h1>
+    <p class="subtitle">Modeling Human Actions and Relations for Interactive Service Robots</p>
+
+    <ul class="authors">
+      <li><span>Ermanno Bartoli</span><sup>1,*</sup></li>
+      <li><span>Dennis Rotondi</span><sup>2,*</sup></li>
+      <li><span>Buwei He</span><sup>1</sup></li>
+      <li><span>Patric Jensfelt</span><sup>1,&dagger;</sup></li>
+      <li><span>Kai&nbsp;O.&nbsp;Arras</span><sup>2</sup></li>
+      <li><span>Iolanda Leite</span><sup>1,&dagger;</sup></li>
+    </ul>
+
+    <ul class="affiliations">
+      <li><sup>1</sup> KTH Royal Institute of Technology</li>
+      <li><sup>2</sup> University of Stuttgart &amp; IMPRS-IS</li>
+    </ul>
+    <p class="note"><sup>*</sup>Equal contribution &nbsp;&middot;&nbsp; <sup>&dagger;</sup>Equal supervision</p>
+
+    <div class="cta-row">
+      <a class="btn btn-primary" href="https://arxiv.org/abs/2509.24966" target="_blank" rel="noopener"><i class="fa-solid fa-file-lines"></i> Paper</a>
+      <a class="btn" href="https://arxiv.org/pdf/2509.24966" target="_blank" rel="noopener"><i class="fa-solid fa-file-pdf"></i> PDF</a>
+      <a class="btn" href="https://github.com/Ermanno-Bartoli/Social-3D-Scene-Graphs" target="_blank" rel="noopener"><i class="fa-brands fa-github"></i> Code</a>
+      <a class="btn" href="#citation"><i class="fa-solid fa-quote-right"></i> Citation</a>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <section class="teaser">
+    <div class="container">
+      <figure>
+        <img src="assets/teaser.png" alt="From a 3D scene with humans, to a 3D reconstruction, to a Social 3D Scene Graph with activity and interaction edges such as sitting on, watching, listening to and speaking to." loading="eager">
+        <figcaption>Social 3D Scene Graphs augment a metric-semantic map with <strong>humans</strong>, their <strong>activities</strong>, and their <strong>relationships</strong> to objects and to each other &mdash; recovered from posed RGB-D observations, open-vocabulary and unconstrained by a fixed label set.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section id="overview" class="section">
+    <div class="container narrow">
+      <h2>Abstract</h2>
+      <p>Understanding how people interact with their surroundings and with each other is essential for enabling robots to act in socially compliant and context-aware ways. 3D Scene Graphs are a powerful representation for capturing the geometry and semantics of an environment, but existing formulations largely ignore humans: they omit human&ndash;environment interactions, describe only single-frame spatial relationships, and miss activities and interactions that unfold across the scene rather than in one glance.</p>
+      <p>We introduce <strong>Social 3D Scene Graphs</strong>, an augmented representation that captures humans, their attributes, and their <strong>local and remote</strong> activities and relationships within an environment, built with an open-vocabulary pipeline so it is not tied to a fixed taxonomy of actions or objects. To recover this representation we propose <strong>ReaSoN</strong>, a four-stage pipeline that describes human behaviour with vision-language models, estimates each person's field of view via 3D head pose and frustum reasoning, and uses an LLM to resolve which activities are actually supported by what is visible &mdash; even when the relevant object or person is outside the current frame.</p>
+      <p>We further contribute <strong>SocialGraph3D</strong>, a new benchmark of synthetic and real indoor scenes with multi-annotator ground-truth human&ndash;activity&ndash;object relationships, together with an evaluation protocol for social scene understanding. Our experiments show that reasoning about remote, out-of-frame interactions substantially improves both activity prediction and downstream question answering about how humans relate to their environment.</p>
+    </div>
+  </section>
+
+  <section id="method" class="section alt">
+    <div class="container">
+      <h2>Method &mdash; the ReaSoN pipeline</h2>
+      <p class="section-lede">ReaSoN turns posed RGB-D video into a Social 3D Scene Graph through four stages: describing what a person is doing, estimating what they can see, resolving ambiguous activities with spatial reasoning, and consolidating everything into clean, canonical relations.</p>
+
+      <figure class="wide-figure">
+        <img src="assets/pipeline.png" alt="ReaSoN pipeline: a person is segmented from the reconstructed scene, described by a vision-language model, and their potential activities such as speaking to and watching are proposed." loading="lazy">
+      </figure>
+
+      <div class="grid-4">
+        <div class="card">
+          <div class="card-icon"><i class="fa-solid fa-comment-dots"></i></div>
+          <h3>1. Activity Descriptor</h3>
+          <p>Segments each person in the reconstructed scene and prompts a vision&ndash;language model for a free-form behaviour description, yielding <em>local</em> activities that are directly visible and <em>remote</em> activities that are plausible but not yet confirmed.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon"><i class="fa-solid fa-eye"></i></div>
+          <h3>2. Interaction Context Estimator</h3>
+          <p>Estimates each person's 3D head pose and models their visual frustum against the map, determining &mdash; with occlusion reasoning &mdash; exactly which objects and people are actually within view.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon"><i class="fa-solid fa-brain"></i></div>
+          <h3>3. Activity Solver</h3>
+          <p>An LLM performs spatial reasoning over the visible entities to validate remote activities, linking each one to the correct object or person when it is contextually and geometrically plausible.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon"><i class="fa-solid fa-diagram-project"></i></div>
+          <h3>4. Activity Consolidation</h3>
+          <p>Canonicalizes linguistic variation with semantic frames and prunes low-frequency, spurious detections &mdash; turning noisy per-frame proposals into a stable set of scene-graph relations.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="benchmark" class="section">
+    <div class="container">
+      <h2>The SocialGraph3D benchmark</h2>
+      <p class="section-lede">A new benchmark pairing synthetic Unity homes with real captured scenes, annotated by multiple raters, for evaluating human&ndash;activity&ndash;object understanding in 3D scene graphs.</p>
+
+      <div class="stat-row">
+        <div class="stat"><span class="stat-num">11</span><span class="stat-label">scenes<br>(8 synthetic + 3 real)</span></div>
+        <div class="stat"><span class="stat-num">54</span><span class="stat-label">unique humans</span></div>
+        <div class="stat"><span class="stat-num">146</span><span class="stat-label">ground-truth relationships</span></div>
+        <div class="stat"><span class="stat-num">11</span><span class="stat-label">activity types</span></div>
+        <div class="stat"><span class="stat-num">80</span><span class="stat-label">evaluation queries</span></div>
+      </div>
+
+      <div class="gallery-grid">
+        <figure><img src="assets/scenegraph.png" alt="Example Social 3D Scene Graph with sitting on, listening to, watching and speaking to relations overlaid on a reconstructed living room." loading="lazy"><figcaption>Recovered activity &amp; relation edges overlaid on the scene.</figcaption></figure>
+        <figure><img src="assets/pointcloud.png" alt="Segmented human point cloud within the 3D reconstructed scene." loading="lazy"><figcaption>Segmented humans within the metric-semantic map.</figcaption></figure>
+        <figure><img src="assets/unity.png" alt="Side-by-side comparison of a synthetic Unity render and its 3D reconstruction with head-pose overlay." loading="lazy"><figcaption>Synthetic Unity scenes used to scale up annotation.</figcaption></figure>
+        <figure><img src="assets/navigation.png" alt="Visibility and navigation heat map used to derive functional relationships between humans and the environment." loading="lazy"><figcaption>Functional-relationship queries, e.g. reachability &amp; visibility.</figcaption></figure>
+      </div>
+    </div>
+  </section>
+
+  <section id="results" class="section alt">
+    <div class="container narrow">
+      <h2>Results</h2>
+
+      <h3>Activity &amp; relationship prediction (F1, %)</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Method</th><th>Overall</th><th>Map&nbsp;1</th><th>Map&nbsp;2</th><th>Map&nbsp;3</th><th>Real&nbsp;A</th><th>Real&nbsp;B</th><th>Real&nbsp;C</th></tr></thead>
+          <tbody>
+            <tr class="highlight"><td>ReaSoN (ours)</td><td><strong>58.2</strong></td><td>66.7</td><td>61.0</td><td>66.7</td><td>48.5</td><td>48.5</td><td>48.6</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Social scene understanding (accuracy, %)</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Query type</th><th>Spatial</th><th>Activity</th><th>Functional</th><th>Mean</th></tr></thead>
+          <tbody>
+            <tr class="highlight"><td>ReaSoN (ours)</td><td>79.8</td><td>81.9</td><td>64.6</td><td><strong>75.4</strong></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Inference speed vs. accuracy trade-off</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Method</th><th>F1 (%)</th><th>Seconds / frame</th></tr></thead>
+          <tbody>
+            <tr class="highlight"><td>ReaSoN</td><td>58.2</td><td>5.43&nbsp;&plusmn;&nbsp;0.78</td></tr>
+            <tr><td>LocalReaSoN <span class="muted">(local activities only)</span></td><td>45.1</td><td>2.60&nbsp;&plusmn;&nbsp;0.56</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="caption-note">LocalReaSoN skips the remote-activity reasoning stages, trading accuracy for roughly 2&times; faster inference &mdash; see the paper for the full ablation.</p>
+    </div>
+  </section>
+
+  <section id="gallery" class="section">
+    <div class="container">
+      <h2>Gallery</h2>
+      <div class="gallery-grid gallery-grid-wide">
+        <figure><img src="assets/teaser.png" alt="Teaser figure showing the full pipeline from 3D scene to social scene graph." loading="lazy"></figure>
+        <figure><img src="assets/pipeline.png" alt="ReaSoN pipeline diagram." loading="lazy"></figure>
+      </div>
+    </div>
+  </section>
+
+  <section id="citation" class="section alt">
+    <div class="container narrow">
+      <h2>Citation</h2>
+      <p>If you find this work useful, please cite:</p>
+      <div class="code-block">
+        <button class="copy-btn" id="copyBtn" type="button"><i class="fa-regular fa-copy"></i> Copy</button>
+        <pre id="bibtex">@inproceedings{bartoli2026social3dsg,
+  title     = {Social 3D Scene Graphs: Modeling Human Actions and Relations for Interactive Service Robots},
+  author    = {Bartoli, Ermanno and Rotondi, Dennis and He, Buwei and Jensfelt, Patric and Arras, Kai O. and Leite, Iolanda},
+  booktitle = {IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)},
+  year      = {2026},
+  eprint    = {2509.24966},
+  archivePrefix = {arXiv}
+}</pre>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <div class="container narrow">
+    <p>This work was partially funded by grants from the Swedish Research Council (2024-05867), the Swedish Foundation for Strategic Research (SSF FFL18-0199), the Digital Futures research center, the Vinnova Competence Center for Trustworthy Edge Computing Systems and Applications at KTH, and the Wallenberg AI, Autonomous Systems and Software Program (WASP) funded by the Knut and Alice Wallenberg Foundation.</p>
+    <p class="footer-links">
+      <a href="https://arxiv.org/abs/2509.24966" target="_blank" rel="noopener">arXiv</a>
+      &middot;
+      <a href="https://github.com/Ermanno-Bartoli/Social-3D-Scene-Graphs" target="_blank" rel="noopener">Code</a>
+      &middot;
+      <a href="mailto:bartoli@kth.se">Contact</a>
+    </p>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
