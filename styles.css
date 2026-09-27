@@ -220,6 +220,13 @@ th:first-child, td:first-child { text-align: left; }
 thead th { color: var(--text-muted); font-weight: 600; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.03em; border-bottom: 1px solid var(--border); }
 tbody tr:not(:last-child) { border-bottom: 1px solid var(--border); }
 tr.highlight td { font-weight: 600; }
+table.compact th, table.compact td { padding: 10px 12px; }
+th.center { text-align: center; text-transform: none; font-size: 0.85rem; }
+thead tr + tr th:first-child { text-align: right; }
+th.group-start, td.group-start { border-left: 1px solid var(--border); }
+thead tr:first-child th[rowspan] { vertical-align: bottom; }
+thead tr + tr th { border-bottom: 1px solid var(--border); }
+tr.total td { border-top: 2px solid var(--border); }
 tr.highlight td:first-child { color: var(--accent-a); }
 .muted { color: var(--text-muted); font-weight: 400; font-size: 0.82rem; }
 .caption-note { font-size: 0.85rem; color: var(--text-muted); margin-top: 12px; }
